@@ -117,7 +117,7 @@ const AppContent: React.FC = () => {
                 id, type: 'agentPanel', position,
                 data: { ...commonData, agentState },
                 style: { width: agentState.size.width, height: agentState.size.height },
-            };
+                         };
             break;
     }
 
@@ -401,6 +401,7 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+          }
   return (
     <ToastProvider>
       <AppContent />
