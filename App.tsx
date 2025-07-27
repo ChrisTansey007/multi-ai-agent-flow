@@ -23,13 +23,17 @@ import AgentSettingsModal from './components/AgentSettingsModal';
 import { sendMessageStream } from './services/geminiService';
 import { Chat } from '@google/genai';
 import { AGENT_COLORS } from './constants';
+import { ToastProvider, useToast } from './src/design-system/components/Toast';
+import { useAccessibility } from './src/design-system/hooks/useAccessibility';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [nextNodeId, setNextNodeId] = useState(1);
   const [workflowStatus, setWorkflowStatus] = useState<'idle' | 'running'>('idle');
   const [editingNode, setEditingNode] = useState<Node<NodeData> | null>(null);
+  const { addToast } = useToast();
+  const { announce } = useAccessibility({ announceChanges: true });
   
   const chatInstances = useRef<Map<string, { chat: Chat; systemInstruction: string }>>(new Map());
 
@@ -154,11 +158,22 @@ const App: React.FC = () => {
 
   const executeWorkflow = async () => {
     setWorkflowStatus('running');
+    announce('Workflow execution started', 'polite');
+    addToast({
+      type: 'info',
+      title: 'Workflow Started',
+      description: 'Your AI workflow is now running...'
+    });
     resetWorkflowState();
     
     const startNode = nodes.find(n => n.type === 'start');
     if (!startNode) {
         console.error("Workflow failed: No Start Node found.");
+        addToast({
+          type: 'error',
+          title: 'Workflow Failed',
+          description: 'No Start Node found. Please add a Start Node to begin.'
+        });
         setWorkflowStatus('idle');
         return;
     }
@@ -175,6 +190,13 @@ const App: React.FC = () => {
         await processNode(edge.target, startValue, edge.targetHandle);
         setEdges(es => es.map(e => e.id === edge.id ? {...e, animated: false} : e));
     }
+    
+    announce('Workflow execution completed', 'polite');
+    addToast({
+      type: 'success',
+      title: 'Workflow Completed',
+      description: 'All agents have finished processing successfully.'
+    });
     setWorkflowStatus('idle');
   };
 
@@ -203,6 +225,11 @@ const App: React.FC = () => {
       } catch (error) {
           console.error(`Error processing node ${nodeId}:`, error);
           updateNodeState(node.id, s => ({ status: 'error' }));
+          addToast({
+            type: 'error',
+            title: 'Agent Error',
+            description: `Failed to process ${node.data.agentState.name}: ${error instanceof Error ? error.message : 'Unknown error'}`
+          });
       }
   };
   
@@ -348,7 +375,7 @@ const App: React.FC = () => {
   }), []);
   
   return (
-    <div className="w-screen h-screen overflow-hidden bg-gray-900 relative flex flex-col">
+    <div className="w-screen h-screen overflow-hidden bg-neutral-950 relative flex flex-col">
        <ReactFlowProvider>
           <WorkflowControls onAddNode={addNode} onRun={executeWorkflow} onReset={resetWorkflowState} onSave={handleSaveWorkflow} onLoad={handleLoadWorkflow} isRunning={workflowStatus === 'running'} />
           <ReactFlow
@@ -360,16 +387,24 @@ const App: React.FC = () => {
             nodeTypes={nodeTypes}
             fitView
             proOptions={{ hideAttribution: true }}
-            className="bg-grid-cyan-500/[0.2]"
+            className="bg-grid-primary-500/[0.1]"
             deleteKeyCode={['Backspace', 'Delete']}
           >
-             <Background color="#4f4f4f" gap={16} />
+             <Background color="#404040" gap={16} />
              <Controls />
           </ReactFlow>
           {editingNode && <AgentSettingsModal node={editingNode} onStateChange={updateNodeStateField} onClose={() => setEditingNode(null)} />}
-          <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-gray-900 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+          <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-neutral-950 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
       </ReactFlowProvider>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
   );
 };
 

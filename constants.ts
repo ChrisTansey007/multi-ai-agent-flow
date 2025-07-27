@@ -32,12 +32,12 @@ export const MODEL_PROVIDERS = [
 
 // A palette of vibrant, yet harmonious colors for agent theming.
 export const AGENT_COLORS = [
-    '#3b82f6', // blue-500
-    '#22c55e', // green-500
+    '#3b82f6', // primary-500
+    '#22c55e', // success-500  
     '#f97316', // orange-500
     '#ec4899', // pink-500
     '#8b5cf6', // violet-500
-    '#06b6d4', // cyan-500
-    '#f59e0b', // amber-500
-    '#ef4444', // red-500
+    '#14b8a6', // secondary-500
+    '#f59e0b', // warning-500
+    '#ef4444', // error-500
 ];
