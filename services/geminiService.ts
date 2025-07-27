@@ -8,7 +8,7 @@ if (!process.env.GEMINI_API_KEY) {
   );
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+const ai = process.env.GEMINI_API_KEY ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) : null;
 // Store not just the chat, but the system prompt it was created with.
 const chatCache = new Map<string, { chat: Chat; systemInstruction: string }>();
 
@@ -19,6 +19,10 @@ function getOrCreateChat(
     model: string, // e.g. gemini-2.5-flash
     chatInstances: React.MutableRefObject<Map<string, { chat: Chat; systemInstruction: string }>>
 ): Chat {
+  if (!ai) {
+    throw new Error("GoogleGenAI client is not initialized. Please set the GEMINI_API_KEY environment variable.");
+  }
+
   const cached = chatInstances.current.get(agentId);
 
   // If a chat exists and the system prompt is the same, reuse it.
@@ -46,8 +50,8 @@ export async function* sendMessageStream(
   chatInstances: React.MutableRefObject<Map<string, { chat: Chat; systemInstruction: string }>>
 ): AsyncGenerator<string, void, undefined> {
 
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("API Key is not configured. Please set the GEMINI_API_KEY environment variable.");
+  if (!ai) {
+    throw new Error("GoogleGenAI client is not initialized. Please set the GEMINI_API_KEY environment variable.");
   }
     
   const chat = getOrCreateChat(agentId, agentState.systemPrompt, agentState.model, chatInstances);
