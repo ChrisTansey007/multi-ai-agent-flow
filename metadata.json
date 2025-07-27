@@ -1,0 +1,5 @@
+{
+  "name": "Nexus AI - Multi-Agent Command Center",
+  "description": "A futuristic AI-powered chat interface for managing multiple, concurrent AI agent conversations. Features a dynamic, draggable, and resizable window-based workspace, allowing real-time model switching for each agent.",
+  "requestFramePermissions": []
+}

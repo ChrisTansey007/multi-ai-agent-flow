@@ -1,0 +1,18 @@
+
+{
+  "nodes": [
+    { "id": "app", "label": "App" },
+    { "id": "agent-panel", "label": "Agent Panel" },
+    { "id": "model-switcher", "label": "Model Switcher" },
+    { "id": "message-list", "label": "Message List" },
+    { "id": "status-bar", "label": "System Status Bar" },
+    { "id": "gemini-service", "label": "Gemini Service" }
+  ],
+  "links": [
+    { "source": "app", "target": "agent-panel" },
+    { "source": "app", "target": "status-bar" },
+    { "source": "agent-panel", "target": "model-switcher" },
+    { "source": "agent-panel", "target": "message-list" },
+    { "source": "agent-panel", "target": "gemini-service" }
+  ]
+}
