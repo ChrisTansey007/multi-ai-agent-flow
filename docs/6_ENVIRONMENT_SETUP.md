@@ -5,6 +5,6 @@
 2.  Install dependencies: `npm install`
 3.  Set up your environment variables. Create a `.env` file and add your API key:
     ```
-    API_KEY=your_gemini_api_key_here
+    GEMINI_API_KEY=your_gemini_api_key_here
     ```
 4.  Run the development server: `npm run dev`

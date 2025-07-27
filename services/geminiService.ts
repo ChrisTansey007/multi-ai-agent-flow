@@ -2,13 +2,13 @@ import React from 'react';
 import { GoogleGenAI, Chat } from "@google/genai";
 import { AgentState } from '../types';
 
-if (!process.env.API_KEY) {
+if (!process.env.GEMINI_API_KEY) {
   console.warn(
-    "API_KEY environment variable not set. Application will not be able to connect to Gemini."
+    "GEMINI_API_KEY environment variable not set. Application will not be able to connect to Gemini."
   );
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 // Store not just the chat, but the system prompt it was created with.
 const chatCache = new Map<string, { chat: Chat; systemInstruction: string }>();
 
@@ -46,8 +46,8 @@ export async function* sendMessageStream(
   chatInstances: React.MutableRefObject<Map<string, { chat: Chat; systemInstruction: string }>>
 ): AsyncGenerator<string, void, undefined> {
 
-  if (!process.env.API_KEY) {
-    throw new Error("API Key is not configured. Please set the API_KEY environment variable.");
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("API Key is not configured. Please set the GEMINI_API_KEY environment variable.");
   }
     
   const chat = getOrCreateChat(agentId, agentState.systemPrompt, agentState.model, chatInstances);
